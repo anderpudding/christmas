@@ -1,389 +1,203 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>성탄절 웹 편지</title>
   <style>
     :root {
-      --bg: linear-gradient(135deg, #0b1b2b, #1c2f47);
-      --gold: #f7d672;
-      --red: #d33f49;
-      --green: #3c8d50;
-      --paper: #fff7ec;
-      --shadow: rgba(0, 0, 0, 0.2);
-      --text: #1c2f47;
+      --red: #c0392b;
+      --green: #1e8c4d;
+      --bg: #f8f5f1;
+      --paper: #fffaf4;
+      --shadow: rgba(0,0,0,0.12);
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       font-family: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
       background: var(--bg);
-      color: #f5f7fb;
+      color: #2c2c2c;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    .snow-layer {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: 5;
-    }
-
-    .snowflake {
-      position: absolute;
-      top: -10px;
-      width: 8px;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 50%;
-      filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
-      animation: fall linear infinite;
-      opacity: 0.9;
-    }
-
-    @keyframes fall {
-      0% { transform: translate3d(var(--x-start), -10px, 0) scale(var(--scale)); }
-      100% { transform: translate3d(var(--x-end), 110vh, 0) scale(var(--scale)); }
-    }
-
-    .card {
-      width: min(960px, 95vw);
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 24px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
-      overflow: hidden;
-      position: relative;
-      z-index: 10;
-      backdrop-filter: blur(8px);
-    }
-
-    header {
-      padding: 18px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.08);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .brand {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      color: #f1f5ff;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    .badge {
-      background: rgba(247, 214, 114, 0.16);
-      color: var(--gold);
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 13px;
-      border: 1px solid rgba(247, 214, 114, 0.35);
-    }
-
-    main { padding: 26px; min-height: 460px; }
-
-    .screen { display: none; }
-    .screen.active { display: grid; }
-
-    .envelope-screen {
-      grid-template-columns: 1fr;
-      align-items: center;
-      text-align: center;
-      gap: 24px;
-    }
-
-    .envelope-wrap {
-      display: grid;
-      justify-items: center;
-      gap: 14px;
-    }
-
-    .envelope {
-      width: min(380px, 82vw);
-      height: min(240px, 56vw);
-      position: relative;
-      cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform 0.9s ease;
-      perspective: 1200px;
-    }
-
-    .envelope-body,
-    .envelope-flap,
-    .envelope-letter,
-    .envelope-shadow {
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-    }
-
-    .envelope-body {
-      background: linear-gradient(145deg, #fefefe, #f2e5d5);
-      box-shadow: 0 18px 40px var(--shadow);
-      z-index: 1;
+      padding: 20px;
       overflow: hidden;
     }
-
-    .envelope-body::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(247, 214, 114, 0.3), rgba(211, 63, 73, 0.18));
-    }
-
-    .envelope-flap {
-      background: linear-gradient(150deg, #f2d6a2, #f7b78a);
-      transform-origin: top;
-      transform: rotateX(0deg);
-      transition: transform 0.9s ease;
-      z-index: 3;
-    }
-
-    .envelope-letter {
-      background: #fff;
-      width: 90%;
-      height: 70%;
-      top: 16%;
-      left: 5%;
-      border-radius: 10px;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
-      transform: translateY(12%);
-      transition: transform 0.9s ease;
-      z-index: 2;
-    }
-
-    .seal {
-      position: absolute;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 78px;
-      height: 52px;
-      background: radial-gradient(circle at 30% 30%, #ffe8a8, #f1c26d 62%);
-      border-radius: 12px;
-      box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.65), 0 10px 26px rgba(0, 0, 0, 0.18);
-      display: grid;
-      place-items: center;
-      color: #5a2e00;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      z-index: 4;
-      transition: transform 0.6s ease, opacity 0.3s ease;
-    }
-
-    .envelope:hover .seal { transform: translateX(-50%) scale(1.04); }
-
-    .envelope.open .envelope-flap { transform: rotateX(-170deg); }
-    .envelope.open .envelope-letter { transform: translateY(-12%); }
-    .envelope.open .seal { opacity: 0; transform: translateX(-50%) scale(0.9); }
-
-    .hint { color: #dce8ff; opacity: 0.9; }
-
-    .panel {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
-      padding: 18px;
-      display: grid;
-      gap: 10px;
-      width: min(440px, 90vw);
-      margin: 0 auto;
+    .app {
+      width: min(960px, 100%);
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px var(--shadow);
+      overflow: hidden;
+      position: relative;
       backdrop-filter: blur(6px);
     }
-
-    .panel h3 { margin: 0; font-size: 18px; color: #f3dba8; }
-    .panel label { font-size: 14px; color: #e6edff; }
-
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-    }
-
-    input[type="password"], input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-      color: #f8fbff;
-      font-size: 15px;
-    }
-
-    button {
-      padding: 12px 16px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
+    header {
+      text-align: center;
+      padding: 22px 16px 12px;
+      border-bottom: 1px dashed #d9d3c8;
+      color: var(--green);
+      letter-spacing: 1px;
       font-weight: 700;
-      color: #0b1b2b;
-      background: var(--gold);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
     }
-
-    button:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,0.24); }
-    button:active { transform: translateY(0); box-shadow: 0 8px 16px rgba(0,0,0,0.2); }
-
-    button.secondary {
-      background: rgba(255, 255, 255, 0.12);
-      color: #f8fbff;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+    .screen { display: none; padding: 28px 24px 32px; position: relative; }
+    .screen.active { display: block; }
+    .envelope-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .envelope { width: 260px; height: 180px; position: relative; cursor: pointer; perspective: 800px; }
+    .envelope .base {
+      width: 100%; height: 100%; background: linear-gradient(135deg, #f5d7c6, #f9e7dc);
+      border-radius: 12px;
+      box-shadow: 0 12px 25px var(--shadow);
+      position: relative;
+      overflow: hidden;
     }
-
-    .message {
-      min-height: 20px;
-      font-size: 14px;
-      color: #ffb4a2;
+    .envelope .flap {
+      position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(135deg, #e4b7a0, #f1c3ad);
+      transform-origin: top;
+      transition: transform 0.8s ease;
+      border-radius: 12px 12px 40px 40px;
+      box-shadow: inset 0 -6px 12px rgba(0,0,0,0.08);
     }
-
-    .letter-screen {
-      grid-template-columns: 1fr;
-      gap: 20px;
+    .envelope .seal {
+      position: absolute; width: 64px; height: 64px; background: var(--red);
+      border-radius: 50%; bottom: 58px; left: 50%; transform: translateX(-50%);
+      display: grid; place-items: center; color: #fff; font-size: 26px;
+      box-shadow: 0 8px 18px rgba(192,57,43,0.25);
     }
-
-    .letter-layout { display: grid; gap: 18px; }
-
-    .paper {
-      background: var(--paper);
-      color: var(--text);
-      padding: 24px;
-      border-radius: 18px;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.15);
-      white-space: pre-wrap;
-      line-height: 1.7;
+    .envelope.open .flap { transform: rotateX(-150deg); }
+    .envelope.open .seal { opacity: 0; transition: opacity 0.4s ease; }
+    .hint { font-size: 15px; color: #666; text-align: center; }
+    .form { width: min(360px, 100%); display: flex; flex-direction: column; gap: 10px; }
+    label { font-weight: 600; color: #333; }
+    input[type="password"] {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #d5d5d5;
       font-size: 16px;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .info-box {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 14px;
-      padding: 16px;
-      color: #f8fbff;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.12);
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-      padding: 16px;
-    }
-
-    .modal-backdrop.show { display: flex; }
-
-    .modal {
       background: #fff;
-      border-radius: 18px;
-      padding: 22px;
-      width: min(420px, 90vw);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      color: #1f2b34;
-      display: grid;
-      gap: 12px;
     }
-
-    .modal h3 { margin: 0; color: #c03d45; }
-    .modal ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
-
-    .panel.hidden { display: none; }
-
-    @media (max-width: 900px) {
-      .letter-layout { grid-template-columns: 1fr; }
-      header { flex-direction: column; gap: 8px; align-items: flex-start; }
-      .actions { justify-content: stretch; }
-      button { width: 100%; }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 15px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
     }
-
-    @media (max-width: 540px) {
-      main { padding: 18px; }
-      .panel { width: 100%; }
-      .paper { font-size: 15px; padding: 18px; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--red), #e25b4c); color: #fff; box-shadow: 0 12px 25px rgba(192,57,43,0.25); }
+    .btn-ghost { background: #fff; color: var(--green); border: 1px solid #c9e7d8; }
+    .error { color: #c0392b; font-size: 14px; min-height: 20px; }
+    .info { font-size: 14px; color: var(--green); min-height: 20px; }
+    .letter { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .panel {
+      background: var(--paper);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 24px var(--shadow);
+      border: 1px solid #efe6da;
+    }
+    .panel h3 { margin: 0 0 10px; color: var(--red); }
+    .letter-body { white-space: pre-line; line-height: 1.7; font-size: 16px; }
+    .flex { display: flex; flex-wrap: wrap; gap: 10px; }
+    .badge { padding: 8px 10px; background: #f1f8f4; border-radius: 10px; color: var(--green); border: 1px solid #cfe8da; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 10;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px 18px;
+      width: min(420px, 100%);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-content h4 { margin: 0 0 12px; color: var(--green); }
+    .gift-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .gift-list li { background: #f8f5f1; padding: 10px 12px; border-radius: 10px; border: 1px solid #e8dfd0; }
+    .snow { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .flake {
+      position: absolute;
+      top: -10px;
+      width: 8px; height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.85;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh); opacity: 0.7; }
+    }
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      header { font-size: 18px; }
+      .letter { grid-template-columns: 1fr; }
+      .envelope { width: 220px; height: 160px; }
     }
   </style>
 </head>
 <body>
-  <div class="snow-layer" aria-hidden="true"></div>
-  <div class="card">
-    <header>
-      <div class="brand">
-        <span>🎄 성탄절 웹 편지</span>
-        <span class="badge">for <strong id="recipient-name"></strong></span>
-      </div>
-      <div class="actions">
-        <button type="button" id="lock-btn" class="secondary" style="display:none;">🔒 다시 잠그기</button>
-      </div>
-    </header>
-    <main>
-      <section id="envelope-screen" class="screen envelope-screen active">
-        <div class="envelope-wrap">
-          <div class="envelope" id="envelope" aria-label="봉투 열기">
-            <div class="envelope-body"></div>
-            <div class="envelope-letter"></div>
-            <div class="envelope-flap"></div>
-            <div class="seal">♥</div>
-          </div>
-          <div class="hint">봉투를 눌러 편지를 열어주세요</div>
-        </div>
-        <div class="panel hidden">
-          <h3>비밀 번호</h3>
-          <label for="password-input">봉투를 열고 입력하면 편지로 이동해요</label>
-          <form id="password-form" class="input-row">
-            <input id="password-input" name="password" type="password" inputmode="numeric" autocomplete="off" placeholder="****" disabled />
-            <button type="submit" id="submit-btn" disabled>열기</button>
-          </form>
-          <div class="message" id="message" aria-live="polite"></div>
-        </div>
-      </section>
+  <div class="app">
+    <header>🎄 Merry Christmas Letter</header>
+    <div class="snow" id="snow"></div>
 
-      <section id="letter-screen" class="screen letter-screen">
-        <div class="letter-layout">
-          <div class="paper" id="letter-body"></div>
-          <div class="info-box">
-            <h4 style="margin:0 0 10px; color: var(--gold);">특별 부록</h4>
-            <p style="margin:6px 0;">🎅 보내는 사람: <strong id="sender-name"></strong></p>
-            <p style="margin:6px 0;">💌 받는 사람: <strong id="recipient-name-2"></strong></p>
+    <section class="screen active" id="envelope-screen">
+      <div class="envelope-wrap">
+        <div class="envelope" id="envelope">
+          <div class="flap"></div>
+          <div class="base"></div>
+          <div class="seal">💌</div>
+        </div>
+        <div class="hint" id="envelope-hint">봉투를 터치해서 열어보세요!</div>
+        <form class="form" id="pw-form">
+          <label for="password">비밀번호</label>
+          <input type="password" id="password" autocomplete="off" placeholder="숫자 4자리" inputmode="numeric" pattern="[0-9]*">
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">열어보기</button>
+            <button type="button" class="btn btn-ghost" id="copy-link">링크 복사</button>
           </div>
-        </div>
+          <div class="error" id="error"></div>
+          <div class="info" id="info"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="screen" id="letter-screen">
+      <div class="panel">
+        <h3 id="letter-title"></h3>
+        <div class="letter-body" id="letter-body"></div>
         <div class="actions">
-          <button type="button" id="gift-btn">🎁 선물 열기</button>
-          <button type="button" id="lock-btn-secondary" class="secondary">🔒 다시 잠그기</button>
+          <button class="btn btn-primary" id="open-gift">🎁 선물 열기</button>
+          <button class="btn btn-ghost" id="lock-again">🔒 다시 잠그기</button>
+          <button class="btn btn-ghost" id="copy-link-2">링크 복사</button>
         </div>
-      </section>
-    </main>
+      </div>
+      <div class="letter">
+        <div class="panel">
+          <h3>오늘의 약속</h3>
+          <div class="flex" id="plans"></div>
+        </div>
+        <div class="panel">
+          <h3>우리의 작은 체크리스트</h3>
+          <ul id="checklist"></ul>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="modal-backdrop" id="modal">
-    <div class="modal">
-      <h3>🎁 우리의 작은 쿠폰</h3>
-      <ul id="coupon-list"></ul>
-      <button type="button" id="modal-close">닫기</button>
+  <div class="modal" id="gift-modal">
+    <div class="modal-content">
+      <h4>작은 쿠폰 3종</h4>
+      <ul class="gift-list" id="gift-list"></ul>
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" id="close-gift">닫기</button>
+      </div>
     </div>
   </div>
 
@@ -392,123 +206,127 @@
       recipient: '예원',
       sender: '성준',
       password: '1225',
-      letterBody: `예원아, Merry Christmas!\n\n올해도 너와 함께라서 무엇보다 따뜻했어.\n눈이 펑펑 내리는 지금, 이 순간을 너와 나누고 싶었어.\n\n우리가 나누는 대화, 함께 웃은 모든 순간이 내게는 큰 선물이야.\n오늘도 네 미소로 가득 찬 하루가 되었으면 좋겠어.\n\n언제나 네 편에서, 너를 응원하고 사랑하는 마음으로.\n앞으로도 손을 꼭 잡고 함께 걸어가자.\n\n메리 크리스마스, 그리고 늘 고마워.`,
-      coupons: [
-        '☕ 따뜻한 음료 1회 쿠폰',
-        '💆‍♀️ 어깨 마사지 10분 쿠폰',
-        '🍪 수제 간식 만들어주기 쿠폰'
-      ]
+      letterTitle: '예원에게 보내는 크리스마스 편지',
+      letter: `오늘도 가장 먼저 떠오르는 사람은 언제나 너야.
+기다림이라는 단어가 이렇게 설레는 건 너 덕분인 것 같아.
+춥더라도 내 손 꼭 잡고, 오늘 만큼은 세상에서 제일 따뜻한 우리가 되자.
+늘 고맙고, 많이 사랑해.`,
+      plans: ['저녁 7시 홍대 브런치 카페 앞 만남', '따뜻한 코코아 함께 마시기', '크리스마스 마켓 구경'],
+      checklist: ['손잡기 잊지 않기', '사진 5장 이상 남기기', '서로에게 칭찬 한 마디 하기'],
+      gifts: ['포옹 쿠폰 1회', '즉석 셀카 인화권 1장', '원하는 간식 사주기권 1회']
     };
 
-    const qs = (id) => document.getElementById(id);
-    const envelope = qs('envelope');
-    const envelopeScreen = qs('envelope-screen');
-    const letterScreen = qs('letter-screen');
-    const passwordInput = qs('password-input');
-    const submitBtn = qs('submit-btn');
-    const messageEl = qs('message');
-    const panel = document.querySelector('.panel');
-    const lockButtons = [qs('lock-btn'), qs('lock-btn-secondary')];
-    const giftBtn = qs('gift-btn');
-    const modal = qs('modal');
-    const modalClose = qs('modal-close');
-
+    const envelope = document.getElementById('envelope');
+    const envelopeHint = document.getElementById('envelope-hint');
+    const pwForm = document.getElementById('pw-form');
+    const passwordInput = document.getElementById('password');
+    const error = document.getElementById('error');
+    const info = document.getElementById('info');
+    const envelopeScreen = document.getElementById('envelope-screen');
+    const letterScreen = document.getElementById('letter-screen');
+    const letterBody = document.getElementById('letter-body');
+    const letterTitle = document.getElementById('letter-title');
+    const plans = document.getElementById('plans');
+    const checklist = document.getElementById('checklist');
+    const giftList = document.getElementById('gift-list');
+    const giftModal = document.getElementById('gift-modal');
+    const openGift = document.getElementById('open-gift');
+    const closeGift = document.getElementById('close-gift');
+    const lockAgain = document.getElementById('lock-again');
+    const copyButtons = [document.getElementById('copy-link'), document.getElementById('copy-link-2')];
     let envelopeOpened = false;
-    let unlocked = false;
 
-    const setMessage = (msg, isError = true) => {
-      messageEl.textContent = msg;
-      messageEl.style.color = isError ? '#ffb4a2' : '#b5f2c9';
-    };
+    function populate() {
+      letterBody.textContent = DATA.letter;
+      letterTitle.textContent = `${DATA.recipient}에게, 성탄절에`; 
+      plans.innerHTML = DATA.plans.map(p => `<span class="badge">${p}</span>`).join('');
+      checklist.innerHTML = DATA.checklist.map(item => `<li>☑︎ ${item}</li>`).join('');
+      giftList.innerHTML = DATA.gifts.map(g => `<li>${g}</li>`).join('');
+    }
 
-    const renderData = () => {
-      qs('recipient-name').textContent = DATA.recipient;
-      qs('recipient-name-2').textContent = DATA.recipient;
-      qs('sender-name').textContent = DATA.sender;
-      qs('letter-body').textContent = DATA.letterBody;
-      qs('coupon-list').innerHTML = DATA.coupons.map(item => `<li>${item}</li>`).join('');
-    };
-
-    const toggleLockState = (unlock) => {
-      unlocked = unlock;
-      envelopeScreen.classList.toggle('active', !unlock);
-      letterScreen.classList.toggle('active', unlock);
-      lockButtons.forEach(btn => btn.style.display = unlock ? 'inline-flex' : 'none');
-      if (!unlock) {
-        envelope.classList.remove('open');
-        envelopeOpened = false;
-        passwordInput.value = '';
-        passwordInput.disabled = true;
-        submitBtn.disabled = true;
-        panel.classList.add('hidden');
-        setMessage('봉투를 먼저 열어주세요.');
+    function createSnow() {
+      const snow = document.getElementById('snow');
+      const total = 70;
+      for (let i = 0; i < total; i++) {
+        const f = document.createElement('div');
+        f.className = 'flake';
+        const size = Math.random() * 5 + 4;
+        f.style.width = f.style.height = `${size}px`;
+        f.style.left = `${Math.random() * 100}%`;
+        f.style.animationDuration = `${6 + Math.random() * 6}s`;
+        f.style.animationDelay = `${Math.random() * 6}s`;
+        snow.appendChild(f);
       }
-    };
+    }
 
-    envelope.addEventListener('click', () => {
+    function openEnvelope() {
       envelope.classList.add('open');
-      setMessage('살짝 열리는 중...');
+      envelopeHint.textContent = '살짝 기다려줘... 비밀번호가 활성화돼요!';
       setTimeout(() => {
         envelopeOpened = true;
-        panel.classList.remove('hidden');
-        passwordInput.disabled = false;
-        submitBtn.disabled = false;
-        passwordInput.focus();
-        setMessage('이제 비밀번호를 입력해 주세요.', false);
-      }, 600);
+        info.textContent = '이제 비밀번호를 입력할 수 있어요.';
+        error.textContent = '';
+      }, 900);
+    }
+
+    envelope.addEventListener('click', () => {
+      if (envelopeOpened) return;
+      openEnvelope();
     });
 
-    qs('password-form').addEventListener('submit', (e) => {
+    pwForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!envelopeOpened) {
-        setMessage('봉투를 먼저 열어주세요.');
+        error.textContent = '먼저 봉투를 열어주세요!';
+        info.textContent = '';
         return;
       }
-      const value = passwordInput.value.trim();
-      if (value === DATA.password) {
-        toggleLockState(true);
-        setMessage('');
+      if (passwordInput.value === DATA.password) {
+        error.textContent = '';
+        info.textContent = '환영해요! 편지로 이동합니다.';
+        envelopeScreen.classList.remove('active');
+        letterScreen.classList.add('active');
       } else {
-        setMessage('비밀번호가 틀렸어요. 다시 시도해 주세요.');
+        error.textContent = '비밀번호가 달라요. 다시 시도해줘!';
+        info.textContent = '';
         passwordInput.select();
       }
     });
 
-    lockButtons.forEach(btn => btn.addEventListener('click', () => {
-      toggleLockState(false);
-    }));
+    function resetAll() {
+      envelopeOpened = false;
+      envelope.classList.remove('open');
+      envelopeHint.textContent = '봉투를 터치해서 열어보세요!';
+      error.textContent = '';
+      info.textContent = '';
+      passwordInput.value = '';
+      letterScreen.classList.remove('active');
+      envelopeScreen.classList.add('active');
+    }
 
-    giftBtn.addEventListener('click', () => {
-      modal.classList.add('show');
-    });
+    lockAgain.addEventListener('click', resetAll);
 
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) modal.classList.remove('show');
-    });
+    function toggleGift(show) {
+      giftModal.classList.toggle('active', show);
+    }
 
-    modalClose.addEventListener('click', () => modal.classList.remove('show'));
+    openGift.addEventListener('click', () => toggleGift(true));
+    closeGift.addEventListener('click', () => toggleGift(false));
+    giftModal.addEventListener('click', (e) => { if (e.target === giftModal) toggleGift(false); });
 
-    const createSnow = () => {
-      const snowLayer = document.querySelector('.snow-layer');
-      const count = 50;
-      for (let i = 0; i < count; i++) {
-        const flake = document.createElement('span');
-        flake.className = 'snowflake';
-        const delay = (Math.random() * 8).toFixed(2);
-        const duration = (7 + Math.random() * 6).toFixed(2);
-        flake.style.left = `${Math.random() * 100}%`;
-        flake.style.animationDelay = `${delay}s`;
-        flake.style.animationDuration = `${duration}s`;
-        flake.style.setProperty('--x-start', `${(Math.random() - 0.5) * 40}px`);
-        flake.style.setProperty('--x-end', `${(Math.random() - 0.5) * 70}px`);
-        flake.style.setProperty('--scale', `${0.6 + Math.random() * 0.8}`);
-        snowLayer.appendChild(flake);
-      }
-    };
+    function copyLink() {
+      const link = window.location.href;
+      navigator.clipboard?.writeText(link).then(() => {
+        info.textContent = '링크가 복사됐어요!';
+      }).catch(() => {
+        const fallback = prompt('클립보드가 막혀있어요. 링크를 복사해 주세요.', link);
+        if (fallback !== null) info.textContent = '필요하면 다시 복사할 수 있어요.';
+      });
+    }
+    copyButtons.forEach(btn => btn.addEventListener('click', copyLink));
 
-    renderData();
+    populate();
     createSnow();
-    setMessage('봉투를 먼저 열어주세요.');
   </script>
 </body>
 </html>
