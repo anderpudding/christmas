@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성탄절 웹 편지</title>
+  <style>
+    :root {
+      --red: #c0392b;
+      --green: #1e8c4d;
+      --bg: #f8f5f1;
+      --paper: #fffaf4;
+      --shadow: rgba(0,0,0,0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: #2c2c2c;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+    .app {
+      width: min(960px, 100%);
+      background: rgba(255,255,255,0.9);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px var(--shadow);
+      overflow: hidden;
+      position: relative;
+      backdrop-filter: blur(6px);
+    }
+    header {
+      text-align: center;
+      padding: 22px 16px 12px;
+      border-bottom: 1px dashed #d9d3c8;
+      color: var(--green);
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .screen { display: none; padding: 28px 24px 32px; position: relative; }
+    .screen.active { display: block; }
+    .envelope-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .envelope { width: 260px; height: 180px; position: relative; cursor: pointer; perspective: 800px; }
+    .envelope .base {
+      width: 100%; height: 100%; background: linear-gradient(135deg, #f5d7c6, #f9e7dc);
+      border-radius: 12px;
+      box-shadow: 0 12px 25px var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .envelope .flap {
+      position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(135deg, #e4b7a0, #f1c3ad);
+      transform-origin: top;
+      transition: transform 0.8s ease;
+      border-radius: 12px 12px 40px 40px;
+      box-shadow: inset 0 -6px 12px rgba(0,0,0,0.08);
+    }
+    .envelope .seal {
+      position: absolute; width: 64px; height: 64px; background: var(--red);
+      border-radius: 50%; bottom: 58px; left: 50%; transform: translateX(-50%);
+      display: grid; place-items: center; color: #fff; font-size: 26px;
+      box-shadow: 0 8px 18px rgba(192,57,43,0.25);
+    }
+    .envelope.open .flap { transform: rotateX(-150deg); }
+    .envelope.open .seal { opacity: 0; transition: opacity 0.4s ease; }
+    .hint { font-size: 15px; color: #666; text-align: center; }
+    .form { width: min(360px, 100%); display: flex; flex-direction: column; gap: 10px; }
+    label { font-weight: 600; color: #333; }
+    input[type="password"] {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #d5d5d5;
+      font-size: 16px;
+      background: #fff;
+    }
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 15px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--red), #e25b4c); color: #fff; box-shadow: 0 12px 25px rgba(192,57,43,0.25); }
+    .btn-ghost { background: #fff; color: var(--green); border: 1px solid #c9e7d8; }
+    .error { color: #c0392b; font-size: 14px; min-height: 20px; }
+    .info { font-size: 14px; color: var(--green); min-height: 20px; }
+    .letter { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .panel {
+      background: var(--paper);
+      border-radius: 14px;
+      padding: 18px 18px 16px;
+      box-shadow: 0 10px 24px var(--shadow);
+      border: 1px solid #efe6da;
+    }
+    .panel h3 { margin: 0 0 10px; color: var(--red); }
+    .letter-body { white-space: pre-line; line-height: 1.7; font-size: 16px; }
+    .flex { display: flex; flex-wrap: wrap; gap: 10px; }
+    .badge { padding: 8px 10px; background: #f1f8f4; border-radius: 10px; color: var(--green); border: 1px solid #cfe8da; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none;
+      align-items: center; justify-content: center; padding: 20px; z-index: 10;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px 18px;
+      width: min(420px, 100%);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .modal-content h4 { margin: 0 0 12px; color: var(--green); }
+    .gift-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .gift-list li { background: #f8f5f1; padding: 10px 12px; border-radius: 10px; border: 1px solid #e8dfd0; }
+    .snow { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .flake {
+      position: absolute;
+      top: -10px;
+      width: 8px; height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.85;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      to { transform: translateY(110vh); opacity: 0.7; }
+    }
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      header { font-size: 18px; }
+      .letter { grid-template-columns: 1fr; }
+      .envelope { width: 220px; height: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>🎄 Merry Christmas Letter</header>
+    <div class="snow" id="snow"></div>
+
+    <section class="screen active" id="envelope-screen">
+      <div class="envelope-wrap">
+        <div class="envelope" id="envelope">
+          <div class="flap"></div>
+          <div class="base"></div>
+          <div class="seal">💌</div>
+        </div>
+        <div class="hint" id="envelope-hint">봉투를 터치해서 열어보세요!</div>
+        <form class="form" id="pw-form">
+          <label for="password">비밀번호</label>
+          <input type="password" id="password" autocomplete="off" placeholder="숫자 4자리" inputmode="numeric" pattern="[0-9]*">
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">열어보기</button>
+            <button type="button" class="btn btn-ghost" id="copy-link">링크 복사</button>
+          </div>
+          <div class="error" id="error"></div>
+          <div class="info" id="info"></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="screen" id="letter-screen">
+      <div class="panel">
+        <h3 id="letter-title"></h3>
+        <div class="letter-body" id="letter-body"></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="open-gift">🎁 선물 열기</button>
+          <button class="btn btn-ghost" id="lock-again">🔒 다시 잠그기</button>
+          <button class="btn btn-ghost" id="copy-link-2">링크 복사</button>
+        </div>
+      </div>
+      <div class="letter">
+        <div class="panel">
+          <h3>오늘의 약속</h3>
+          <div class="flex" id="plans"></div>
+        </div>
+        <div class="panel">
+          <h3>우리의 작은 체크리스트</h3>
+          <ul id="checklist"></ul>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="gift-modal">
+    <div class="modal-content">
+      <h4>작은 쿠폰 3종</h4>
+      <ul class="gift-list" id="gift-list"></ul>
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" id="close-gift">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DATA = {
+      recipient: '예원',
+      sender: '성준',
+      password: '1225',
+      letterTitle: '예원에게 보내는 크리스마스 편지',
+      letter: `오늘도 가장 먼저 떠오르는 사람은 언제나 너야.
+기다림이라는 단어가 이렇게 설레는 건 너 덕분인 것 같아.
+춥더라도 내 손 꼭 잡고, 오늘 만큼은 세상에서 제일 따뜻한 우리가 되자.
+늘 고맙고, 많이 사랑해.`,
+      plans: ['저녁 7시 홍대 브런치 카페 앞 만남', '따뜻한 코코아 함께 마시기', '크리스마스 마켓 구경'],
+      checklist: ['손잡기 잊지 않기', '사진 5장 이상 남기기', '서로에게 칭찬 한 마디 하기'],
+      gifts: ['포옹 쿠폰 1회', '즉석 셀카 인화권 1장', '원하는 간식 사주기권 1회']
+    };
+
+    const envelope = document.getElementById('envelope');
+    const envelopeHint = document.getElementById('envelope-hint');
+    const pwForm = document.getElementById('pw-form');
+    const passwordInput = document.getElementById('password');
+    const error = document.getElementById('error');
+    const info = document.getElementById('info');
+    const envelopeScreen = document.getElementById('envelope-screen');
+    const letterScreen = document.getElementById('letter-screen');
+    const letterBody = document.getElementById('letter-body');
+    const letterTitle = document.getElementById('letter-title');
+    const plans = document.getElementById('plans');
+    const checklist = document.getElementById('checklist');
+    const giftList = document.getElementById('gift-list');
+    const giftModal = document.getElementById('gift-modal');
+    const openGift = document.getElementById('open-gift');
+    const closeGift = document.getElementById('close-gift');
+    const lockAgain = document.getElementById('lock-again');
+    const copyButtons = [document.getElementById('copy-link'), document.getElementById('copy-link-2')];
+    let envelopeOpened = false;
+
+    function populate() {
+      letterBody.textContent = DATA.letter;
+      letterTitle.textContent = `${DATA.recipient}에게, 성탄절에`; 
+      plans.innerHTML = DATA.plans.map(p => `<span class="badge">${p}</span>`).join('');
+      checklist.innerHTML = DATA.checklist.map(item => `<li>☑︎ ${item}</li>`).join('');
+      giftList.innerHTML = DATA.gifts.map(g => `<li>${g}</li>`).join('');
+    }
+
+    function createSnow() {
+      const snow = document.getElementById('snow');
+      const total = 70;
+      for (let i = 0; i < total; i++) {
+        const f = document.createElement('div');
+        f.className = 'flake';
+        const size = Math.random() * 5 + 4;
+        f.style.width = f.style.height = `${size}px`;
+        f.style.left = `${Math.random() * 100}%`;
+        f.style.animationDuration = `${6 + Math.random() * 6}s`;
+        f.style.animationDelay = `${Math.random() * 6}s`;
+        snow.appendChild(f);
+      }
+    }
+
+    function openEnvelope() {
+      envelope.classList.add('open');
+      envelopeHint.textContent = '살짝 기다려줘... 비밀번호가 활성화돼요!';
+      setTimeout(() => {
+        envelopeOpened = true;
+        info.textContent = '이제 비밀번호를 입력할 수 있어요.';
+        error.textContent = '';
+      }, 900);
+    }
+
+    envelope.addEventListener('click', () => {
+      if (envelopeOpened) return;
+      openEnvelope();
+    });
+
+    pwForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!envelopeOpened) {
+        error.textContent = '먼저 봉투를 열어주세요!';
+        info.textContent = '';
+        return;
+      }
+      if (passwordInput.value === DATA.password) {
+        error.textContent = '';
+        info.textContent = '환영해요! 편지로 이동합니다.';
+        envelopeScreen.classList.remove('active');
+        letterScreen.classList.add('active');
+      } else {
+        error.textContent = '비밀번호가 달라요. 다시 시도해줘!';
+        info.textContent = '';
+        passwordInput.select();
+      }
+    });
+
+    function resetAll() {
+      envelopeOpened = false;
+      envelope.classList.remove('open');
+      envelopeHint.textContent = '봉투를 터치해서 열어보세요!';
+      error.textContent = '';
+      info.textContent = '';
+      passwordInput.value = '';
+      letterScreen.classList.remove('active');
+      envelopeScreen.classList.add('active');
+    }
+
+    lockAgain.addEventListener('click', resetAll);
+
+    function toggleGift(show) {
+      giftModal.classList.toggle('active', show);
+    }
+
+    openGift.addEventListener('click', () => toggleGift(true));
+    closeGift.addEventListener('click', () => toggleGift(false));
+    giftModal.addEventListener('click', (e) => { if (e.target === giftModal) toggleGift(false); });
+
+    function copyLink() {
+      const link = window.location.href;
+      navigator.clipboard?.writeText(link).then(() => {
+        info.textContent = '링크가 복사됐어요!';
+      }).catch(() => {
+        const fallback = prompt('클립보드가 막혀있어요. 링크를 복사해 주세요.', link);
+        if (fallback !== null) info.textContent = '필요하면 다시 복사할 수 있어요.';
+      });
+    }
+    copyButtons.forEach(btn => btn.addEventListener('click', copyLink));
+
+    populate();
+    createSnow();
+  </script>
+</body>
+</html>
